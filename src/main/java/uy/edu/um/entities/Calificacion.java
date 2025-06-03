@@ -9,5 +9,4 @@ public class Calificacion {
     private int puntaje;
     private Usuario calificador;
     private Pelicula puntuada;
-
 }
