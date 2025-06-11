@@ -9,8 +9,8 @@ public class ItemHeap<T> implements Comparable<ItemHeap<T>> {
     private T item;
     private Integer comparacion;
 
-    public ItemHeap(T peli, Integer comp) {
-        item = peli;
+    public ItemHeap(T itemT, Integer comp) {
+        item = itemT;
         comparacion = comp;
     }
 

@@ -10,7 +10,6 @@ public class Main {
     private MyLinkedListImpl<Pelicula> peliculas = new MyLinkedListImpl<>();
     private MyLinkedListImpl<Coleccion> colecciones = new MyLinkedListImpl<>();
 
-
     public static void main(String[] args) {
         System.out.println("Hello, World!");
     }
@@ -46,16 +45,25 @@ public class Main {
         }
     }
 
-    private void addToHeap(MyHeapImpl<ItemHeap<Pelicula>> heap, ItemHeap peli, Integer tamanoHeap) {
+
+
+    private <T> void addToHeap(MyHeapImpl<ItemHeap<T>> heap, ItemHeap<T> item, Integer tamanoHeap) {
         if (heap.size() < tamanoHeap) {
-            heap.insert(peli);
+            heap.insert(item);
         } else {
-            ItemHeap min = heap.get();
-            if (peli.compareTo(min) > 0) {
+            ItemHeap<T> min = heap.get();
+            if (item.compareTo(min) > 0) {
                 heap.delete();
-                heap.insert(peli);
+                heap.insert(item);
             }
         }
     }
+
+
+    private void top5ColeccConMasIngr (){
+
+
+    }
 }
+
 
