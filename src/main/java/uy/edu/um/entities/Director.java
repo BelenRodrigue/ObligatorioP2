@@ -10,4 +10,5 @@ public class Director {
     private String nombre;
     private MyLinkedListImpl<Pelicula> peliculas;
 
+
 }
