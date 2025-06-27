@@ -41,7 +41,7 @@ public class CSVReader {
             String[] fields = line.split(",");
 
             // Leer cast
-            for (int i=0; i<fields[0])
+            //for (int i=0; i<fields[0])
 
             // Leer crew
 
