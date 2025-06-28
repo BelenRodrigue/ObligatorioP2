@@ -3,16 +3,17 @@ package uy.edu.um;
 import  uy.edu.um.entities.Coleccion;
 import uy.edu.um.entities.Pelicula;
 import uy.edu.um.entities.ItemHeap;
+import uy.edu.um.entities.ResultadoReader;
 import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 
 import java.util.Scanner;
 
 public class Main {
-    private MyLinkedListImpl<Pelicula> peliculas = new MyLinkedListImpl<>();
-    private MyLinkedListImpl<Coleccion> colecciones = new MyLinkedListImpl<>();
-
     public static void main(String[] args) {
+        CSVReader reader = new CSVReader();
+        ResultadoReader result = reader.readFiles();
+
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("=== Menú Principal ===");
