@@ -44,4 +44,5 @@ public class Movie {
         this.tagline = tagline;
         this.title = title;
     }
+
 }

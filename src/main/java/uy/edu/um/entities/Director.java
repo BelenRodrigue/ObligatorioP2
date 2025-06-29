@@ -8,7 +8,7 @@ import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 @Setter
 public class Director {
     private String nombre;
-    private MyLinkedListImpl<Pelicula> peliculas;
+    private MyLinkedListImpl<Movie> peliculas;
 
 
 }

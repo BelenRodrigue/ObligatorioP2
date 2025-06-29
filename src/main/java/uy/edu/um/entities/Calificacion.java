@@ -8,5 +8,5 @@ import lombok.Setter;
 public class Calificacion {
     private int puntaje;
     private Usuario calificador;
-    private Pelicula puntuada;
+    private Movie puntuada;
 }

@@ -1,9 +1,6 @@
 package uy.edu.um;
 
-import  uy.edu.um.entities.Coleccion;
-import uy.edu.um.entities.Pelicula;
-import uy.edu.um.entities.ItemHeap;
-import uy.edu.um.entities.ResultadoReader;
+import uy.edu.um.entities.*;
 import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 
@@ -102,14 +99,14 @@ public class Main {
     }
 
             private void top5PelConMasCalif () {
-                MyHeapImpl<ItemHeap<Pelicula>> ingles = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Pelicula>> frances = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Pelicula>> italiano = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Pelicula>> espanol = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Pelicula>> portugues = new MyHeapImpl<>(5, true);
+                MyHeapImpl<ItemHeap<Movie>> ingles = new MyHeapImpl<>(5, true);
+                MyHeapImpl<ItemHeap<Movie>> frances = new MyHeapImpl<>(5, true);
+                MyHeapImpl<ItemHeap<Movie>> italiano = new MyHeapImpl<>(5, true);
+                MyHeapImpl<ItemHeap<Movie>> espanol = new MyHeapImpl<>(5, true);
+                MyHeapImpl<ItemHeap<Movie>> portugues = new MyHeapImpl<>(5, true);
 
-                for (int i = 0; i < peliculas.size(); i++) {
-                    Pelicula peliIter = peliculas.get(i);
+                for (int i = 0; i < movie.size(); i++) {
+                    Movie peliIter = movie.get(i);
                     Integer cantiCalif = peliIter.getCalificaciones().size();
 
                     switch (peliIter.getIdioma()) {
@@ -128,10 +125,10 @@ public class Main {
             }
 
             private void top10PelConMejCalifMed () {
-                MyHeapImpl<ItemHeap<Pelicula>> topTen = new MyHeapImpl<>(10, true);
+                MyHeapImpl<ItemHeap<Movie>> topTen = new MyHeapImpl<>(10, true);
 
-                for (int i = 0; i < peliculas.size(); i++) {
-                    Pelicula peliIter = peliculas.get(i);
+                for (int i = 0; i < movie.size(); i++) {
+                    Movie peliIter = movie.get(i);
                     Integer calMed = peliIter.getCalifMedia();
                     addToHeap(topTen, new ItemHeap<>(peliIter, calMed), 10);
                 }
@@ -150,16 +147,16 @@ public class Main {
             }
 
             private void top5ColeccConMasIngr () {
-                MyHeapImpl<ItemHeap<Coleccion>> topFive = new MyHeapImpl<>(5, true);
+                MyHeapImpl<ItemHeap<Collection>> topFive = new MyHeapImpl<>(5, true);
 
 
-                for (int i = 0; i < colecciones.size(); i++) {
-                    Coleccion coleccionActual = colecciones.get(i);
-                    MyLinkedListImpl<Pelicula> peliculasDeColecc = coleccionActual.getPeliculas();
+                for (int i = 0; i < collection.size(); i++) {
+                    Collection coleccionActual = collection.get(i);
+                    MyLinkedListImpl<Movie> peliculasDeColecc = coleccionActual.getPeliculas();
                     int sumatoriaGanancias = 0;
 
                     for (int j = 0; j < peliculasDeColecc.size(); j++) {
-                        Pelicula peliculaActual = peliculasDeColecc.get(j);
+                        Movie peliculaActual = peliculasDeColecc.get(j);
                         sumatoriaGanancias = sumatoriaGanancias + peliculaActual.getIngresoGenerado();
 
                     }
