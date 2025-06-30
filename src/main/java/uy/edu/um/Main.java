@@ -89,13 +89,13 @@ public class Main {
                     break;
                 case 5:
                     inicio = System.currentTimeMillis();
-                    ActorMasCalificadoMensual();
+//                    ActorMasCalificadoMensual();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 6:
                     inicio = System.currentTimeMillis();
-                    UsuariosConMasCalificPorGenero();
+//                    UsuariosConMasCalificPorGenero();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
@@ -116,8 +116,6 @@ public class Main {
 
         MyHashImpl<Integer, Integer> cantRatings = new MyHashImpl<>();
 
-        System.out.println("empieza a iterar los ratings");
-
         for (int ratingIndex = 0; ratingIndex < ratings.size(); ratingIndex++) {
             Rating ratingIter = ratings.get(ratingIndex);
 
@@ -128,8 +126,6 @@ public class Main {
                 cantRatings.put(ratingIter.getMovieId(), 1);
             }
         }
-
-        System.out.println("termino de iterar los ratings");
 
         MyList<Integer> cantRatingsMovieId = cantRatings.keys();
         MyList<Integer> cantRatingsCount = cantRatings.values();
@@ -143,18 +139,21 @@ public class Main {
                 case "en":
                     System.out.println("agrego al heap ingles");
                     addToHeap(ingles, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                    break;
                 case "fr":
                     addToHeap(frances, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                    break;
                 case "it":
                     addToHeap(italiano, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                    break;
                 case "es":
                     addToHeap(espanol, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                    break;
                 case "pt":
                     addToHeap(portugues, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                    break;
             }
         }
-
-        System.out.println("termino de agregar a los heap");
 
         imprimirHeap(ingles);
         imprimirHeap(frances);
