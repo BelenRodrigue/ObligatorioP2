@@ -6,6 +6,7 @@ import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 import uy.edu.um.tad.linkedlist.MyList;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
@@ -76,25 +77,25 @@ public class Main {
                     break;
                 case 3:
                     inicio = System.currentTimeMillis();
-//                    top5ColeccConMasIngr();
+                    top5ColeccConMasIngr();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 4:
                     inicio = System.currentTimeMillis();
-//                    top10DirecMejorCal();
+                    top10DirecMejorCal();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 5:
                     inicio = System.currentTimeMillis();
-//                    ActorMasCalificadoMensual();
+                    ActorMasCalificadoMensual();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 6:
                     inicio = System.currentTimeMillis();
-//                    UsuariosConMasCalificPorGenero();
+                    UsuariosConMasCalificPorGenero();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
@@ -251,7 +252,7 @@ public class Main {
         }
     }
 
-    private void top5ColeccConMasIngr() {
+    private static void top5ColeccConMasIngr() {
         MyHeapImpl<ItemHeapLong<IngresoCollection>> top = new MyHeapImpl<>(5, true);
         MyHashImpl<Integer, IngresoCollection> ingresos = new MyHashImpl<>();
 
@@ -278,7 +279,7 @@ public class Main {
 
         for (int collsInd = 0; collsInd < collIds.size(); collsInd++) {
             IngresoCollection collIter = ingColl.get(collsInd);
-            addToHeapLong(top, new ItemHeapLong<>(collIter, collIter.getIngreso()), 10);
+            addToHeapLong(top, new ItemHeapLong<>(collIter, collIter.getIngreso()), 5);
         }
 
         while (top.size() > 0) {
@@ -294,26 +295,67 @@ public class Main {
             }
             System.out.println(ingr);
         }
-
     }
-//        MyHeapImpl<ItemHeap<Collection>> topFive = new MyHeapImpl<>(5, true);
-//
-//
-//        for (int i = 0; i < collection.size(); i++) {
-//            Collection coleccionActual = collection.get(i);
-//            MyLinkedListImpl<Movie> peliculasDeColecc = coleccionActual.getPeliculas();
-//            int sumatoriaGanancias = 0;
-//
-//            for (int j = 0; j < peliculasDeColecc.size(); j++) {
-//                Movie peliculaActual = peliculasDeColecc.get(j);
-//                sumatoriaGanancias = sumatoriaGanancias + peliculaActual.getIngresoGenerado();
-//
-//            }
-//            addToHeap(topFive, new ItemHeap<>(coleccionActual, sumatoriaGanancias), 5);
-//        }
-//    }
 
-    private void top10DirecMejorCal() {
+    private static void top10DirecMejorCal() {
+        MyHashImpl<Integer, Promedio> cantRatings = new MyHashImpl<>();
+        MyHeapImpl<ItemHeapDouble<CalifDirector>> top = new MyHeapImpl<>(10, true);
+
+        for (int ratingIndex = 0; ratingIndex < ratings.size(); ratingIndex++) {
+            Rating ratingIter = ratings.get(ratingIndex);
+
+            if (cantRatings.contains(ratingIter.getMovieId())) {
+                Promedio nuevoPromedio = cantRatings.get(ratingIter.getMovieId());
+                nuevoPromedio.sumarCalif(ratingIter.getRating());
+                cantRatings.put(ratingIter.getMovieId(), nuevoPromedio);
+            } else {
+                Promedio promedio = new Promedio(ratingIter.getRating());
+                cantRatings.put(ratingIter.getMovieId(), promedio);
+            }
+        }
+
+        MyHashImpl<Integer, CalifDirector> califDir = new MyHashImpl<>();
+
+        for (int i=0; i<credits.size(); i++) {
+            Credits credit = credits.get(i);
+            MyLinkedListImpl<CrewMember> crewMembers = credit.getCrewMembers();
+            for (int j=0; j<crewMembers.size(); j++) {
+                CrewMember member = crewMembers.get(j);
+                if (Objects.equals(member.getJob(), "Director")) {
+                    if (califDir.contains(member.getId())) {
+                        CalifDirector cali = califDir.get(member.getId());
+                        Promedio promedio = cantRatings.get(credit.getId());
+                        cali.agregarPelicula(promedio.cantidadCalif, promedio.califi);
+                        califDir.put(member.getId(), cali);
+                    } else {
+                        CalifDirector cali = new CalifDirector(member.getName());
+                        Promedio promedio = cantRatings.get(credit.getId());
+                        cali.agregarPelicula(promedio.cantidadCalif, promedio.califi);
+                        califDir.put(member.getId(), cali);
+                    }
+                }
+            }
+        }
+
+        MyList<Integer> dirIds = califDir.keys();
+        MyList<CalifDirector> califs = califDir.values();
+
+        for (int caliInd = 0; caliInd < dirIds.size(); caliInd++) {
+            CalifDirector calDir = califs.get(caliInd);
+            if (calDir.getCantiCalif() > 100 && calDir.getCantidadPelis() > 1) {
+                addToHeapDouble(top, new ItemHeapDouble<>(calDir, calDir.getMedia()), 10);
+            }
+        }
+
+        while (top.size() > 0) {
+            ItemHeapDouble<CalifDirector> calItem = top.get();
+            CalifDirector calDir = calItem.getItem();
+            Double media = calItem.getComparacion();
+            top.delete();
+            System.out.println(calDir.getNombre() + ", ");
+            System.out.println(calDir.getCantidadPelis() + ", ");
+            System.out.println(media);
+        }
     }
 
     private void ActorMasCalificadoMensual() {
