@@ -1,16 +1,19 @@
 package uy.edu.um;
 
 import uy.edu.um.entities.*;
+import uy.edu.um.tad.hash.MyHashImpl;
 import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
+import uy.edu.um.tad.linkedlist.MyList;
 
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
-        CSVReader reader = new CSVReader();
-        ResultadoReader result = reader.readFiles();
+    private static MyHashImpl<Integer, Credits> credits;
+    private static MyHashImpl<Integer, Movie> movies;
+    private static MyLinkedListImpl<Rating> ratings;
 
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         while (true) {
             System.out.println("=== Menú Principal ===");
@@ -22,7 +25,12 @@ public class Main {
             switch (opcion) {
                 case 1:
                     long inicio = System.currentTimeMillis();
-                    //CSVReader.readFiles();
+                    CSVReader reader = new CSVReader();
+                    ResultadoReader result = reader.readFiles();
+
+                    credits = result.getCredits();
+                    movies = result.getMovies();
+                    ratings = result.getRatings();
                     long fin = System.currentTimeMillis();
                     System.out.println("Carga de datos exitosa en " + (fin - inicio) + " ms.");
                     break;
@@ -56,7 +64,7 @@ public class Main {
             switch (opcion) {
                 case 1:
                     inicio = System.currentTimeMillis();
-                    top5PelPorIdioma();
+                    top5PelConMasCalif();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
@@ -68,25 +76,25 @@ public class Main {
                     break;
                 case 3:
                     inicio = System.currentTimeMillis();
-                    top5ColeccConMasIngr();
+//                    top5ColeccConMasIngr();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 4:
                     inicio = System.currentTimeMillis();
-                    top10DirecMejorCal();
+//                    top10DirecMejorCal();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 5:
                     inicio = System.currentTimeMillis();
-                    ActorMasCalificadoMensual();
+//                    ActorMasCalificadoMensual();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
                 case 6:
                     inicio = System.currentTimeMillis();
-                    UsuariosConMasCalificPorGenero();
+//                    UsuariosConMasCalificPorGenero();
                     fin = System.currentTimeMillis();
                     System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms.");
                     break;
@@ -98,75 +106,219 @@ public class Main {
         }
     }
 
-            private void top5PelConMasCalif () {
-                MyHeapImpl<ItemHeap<Movie>> ingles = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Movie>> frances = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Movie>> italiano = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Movie>> espanol = new MyHeapImpl<>(5, true);
-                MyHeapImpl<ItemHeap<Movie>> portugues = new MyHeapImpl<>(5, true);
+    private static void top5PelConMasCalif() {
+        MyHeapImpl<ItemHeap<Movie>> ingles = new MyHeapImpl<>(5, true);
+        MyHeapImpl<ItemHeap<Movie>> frances = new MyHeapImpl<>(5, true);
+        MyHeapImpl<ItemHeap<Movie>> italiano = new MyHeapImpl<>(5, true);
+        MyHeapImpl<ItemHeap<Movie>> espanol = new MyHeapImpl<>(5, true);
+        MyHeapImpl<ItemHeap<Movie>> portugues = new MyHeapImpl<>(5, true);
 
-                for (int i = 0; i < movie.size(); i++) {
-                    Movie peliIter = movie.get(i);
-                    Integer cantiCalif = peliIter.getCalificaciones().size();
+        MyHashImpl<Integer, Integer> cantRatings = new MyHashImpl<>();
 
-                    switch (peliIter.getIdioma()) {
-                        case "ingles":
-                            addToHeap(ingles, new ItemHeap<>(peliIter, cantiCalif), 5);
-                        case "frances":
-                            addToHeap(frances, new ItemHeap<>(peliIter, cantiCalif), 5);
-                        case "italiano":
-                            addToHeap(italiano, new ItemHeap<>(peliIter, cantiCalif), 5);
-                        case "espanol":
-                            addToHeap(espanol, new ItemHeap<>(peliIter, cantiCalif), 5);
-                        case "portugues":
-                            addToHeap(portugues, new ItemHeap<>(peliIter, cantiCalif), 5);
-                    }
-                }
+        System.out.println("empieza a iterar los ratings");
+
+        for (int ratingIndex = 0; ratingIndex < ratings.size(); ratingIndex++) {
+            Rating ratingIter = ratings.get(ratingIndex);
+
+            if (cantRatings.contains(ratingIter.getMovieId())) {
+                Integer nuevaCantidadDeRatings = cantRatings.get(ratingIter.getMovieId()) + 1;
+                cantRatings.put(ratingIter.getMovieId(), nuevaCantidadDeRatings);
+            } else {
+                cantRatings.put(ratingIter.getMovieId(), 1);
             }
+        }
 
-            private void top10PelConMejCalifMed () {
-                MyHeapImpl<ItemHeap<Movie>> topTen = new MyHeapImpl<>(10, true);
+        System.out.println("termino de iterar los ratings");
 
-                for (int i = 0; i < movie.size(); i++) {
-                    Movie peliIter = movie.get(i);
-                    Integer calMed = peliIter.getCalifMedia();
-                    addToHeap(topTen, new ItemHeap<>(peliIter, calMed), 10);
-                }
+        MyList<Integer> cantRatingsMovieId = cantRatings.keys();
+        MyList<Integer> cantRatingsCount = cantRatings.values();
+
+        for (int cantRatingIndex = 0; cantRatingIndex < cantRatingsMovieId.size(); cantRatingIndex++) {
+            Integer movieIdIter = cantRatingsMovieId.get(cantRatingIndex);
+            Integer cantRatMovie = cantRatingsCount.get(cantRatingIndex);
+            Movie movieIter = movies.get(movieIdIter);
+
+            switch (movieIter.getOriginalLanguage()) {
+                case "en":
+                    System.out.println("agrego al heap ingles");
+                    addToHeap(ingles, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                case "fr":
+                    addToHeap(frances, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                case "it":
+                    addToHeap(italiano, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                case "es":
+                    addToHeap(espanol, new ItemHeap<>(movieIter, cantRatMovie), 5);
+                case "pt":
+                    addToHeap(portugues, new ItemHeap<>(movieIter, cantRatMovie), 5);
             }
+        }
 
-            private <T > void addToHeap (MyHeapImpl < ItemHeap < T >> heap, ItemHeap < T > item, Integer tamanoHeap){
-                if (heap.size() < tamanoHeap) {
-                    heap.insert(item);
+        System.out.println("termino de agregar a los heap");
+
+        imprimirHeap(ingles);
+        imprimirHeap(frances);
+        imprimirHeap(italiano);
+        imprimirHeap(espanol);
+        imprimirHeap(portugues);
+    }
+
+    private static void imprimirHeap(MyHeapImpl<ItemHeap<Movie>> heap) {
+        while (heap.size() > 0) {
+            ItemHeap<Movie> movieItem = heap.get();
+            Movie movie = movieItem.getItem();
+            Integer calif = movieItem.getComparacion();
+            heap.delete();
+
+            System.out.println(movie.getId() + ", ");
+            System.out.println(movie.getTitle() + ", ");
+            System.out.println(calif + ", ");
+            System.out.println(movie.getOriginalLanguage());
+        }
+    }
+
+    private static void top10PelConMejCalifMed() {
+        MyHeapImpl<ItemHeapDouble<Movie>> top = new MyHeapImpl<>(10, true);
+        MyHashImpl<Integer, Promedio> cantRatings = new MyHashImpl<>();
+
+        for (int ratingIndex = 0; ratingIndex < ratings.size(); ratingIndex++) {
+            Rating ratingIter = ratings.get(ratingIndex);
+
+            if (cantRatings.contains(ratingIter.getMovieId())) {
+                Promedio nuevoPromedio = cantRatings.get(ratingIter.getMovieId());
+                nuevoPromedio.sumarCalif(ratingIter.getRating());
+                cantRatings.put(ratingIter.getMovieId(), nuevoPromedio);
+            } else {
+                Promedio promedio = new Promedio(ratingIter.getRating());
+                cantRatings.put(ratingIter.getMovieId(), promedio);
+            }
+        }
+
+        MyList<Integer> moviesIds = cantRatings.keys();
+        MyList<Promedio> promedios = cantRatings.values();
+
+        for (int cantRatingIndex = 0; cantRatingIndex < moviesIds.size(); cantRatingIndex++) {
+            Integer movieIdIter = moviesIds.get(cantRatingIndex);
+            Promedio promedio = promedios.get(cantRatingIndex);
+            Movie movieIter = movies.get(movieIdIter);
+
+            addToHeapDouble(top, new ItemHeapDouble<>(movieIter, promedio.calcular()), 10);
+        }
+
+        while (top.size() > 0) {
+            ItemHeapDouble<Movie> movieItem = top.get();
+            Movie movie = movieItem.getItem();
+            Double calif = movieItem.getComparacion();
+            top.delete();
+            System.out.println(movie.getId() + ", ");
+            System.out.println(movie.getTitle() + ", ");
+            System.out.println(calif);
+        }
+    }
+
+    private static <T> void addToHeap(MyHeapImpl<ItemHeap<T>> heap, ItemHeap<T> item, Integer tamanoHeap) {
+        if (heap.size() < tamanoHeap) {
+            heap.insert(item);
+        } else {
+            ItemHeap<T> min = heap.get();
+            if (item.compareTo(min) > 0) {
+                heap.delete();
+                heap.insert(item);
+            }
+        }
+    }
+
+    private static <T> void addToHeapDouble(MyHeapImpl<ItemHeapDouble<T>> heap, ItemHeapDouble<T> item, Integer tamanoHeap) {
+        if (heap.size() < tamanoHeap) {
+            heap.insert(item);
+        } else {
+            ItemHeapDouble<T> min = heap.get();
+            if (item.compareTo(min) > 0) {
+                heap.delete();
+                heap.insert(item);
+            }
+        }
+    }
+
+    private static <T> void addToHeapLong(MyHeapImpl<ItemHeapLong<T>> heap, ItemHeapLong<T> item, Integer tamanoHeap) {
+        if (heap.size() < tamanoHeap) {
+            heap.insert(item);
+        } else {
+            ItemHeapLong<T> min = heap.get();
+            if (item.compareTo(min) > 0) {
+                heap.delete();
+                heap.insert(item);
+            }
+        }
+    }
+
+    private void top5ColeccConMasIngr() {
+        MyHeapImpl<ItemHeapLong<IngresoCollection>> top = new MyHeapImpl<>(5, true);
+        MyHashImpl<Integer, IngresoCollection> ingresos = new MyHashImpl<>();
+
+        for (int i =0; i < movies.size(); i++) {
+            Movie movie = movies.get(i);
+            MyLinkedListImpl<Collection> collections = new MyLinkedListImpl<>();
+
+            for (int j=0; j<collections.size(); j++) {
+                Collection collection = collections.get(j);
+
+                if (ingresos.contains(collection.getId())) {
+                    IngresoCollection ingColl = ingresos.get(collection.getId());
+                    ingColl.sumMovie(movie.getId(), movie.getRevenue());
+                    ingresos.put(collection.getId(), ingColl);
                 } else {
-                    ItemHeap<T> min = heap.get();
-                    if (item.compareTo(min) > 0) {
-                        heap.delete();
-                        heap.insert(item);
-                    }
+                    IngresoCollection ingColl = new IngresoCollection(collection.getId(), collection.getName(), movie.getId(), movie.getRevenue());
+                    ingresos.put(collection.getId(), ingColl);
                 }
             }
+        }
 
-            private void top5ColeccConMasIngr () {
-                MyHeapImpl<ItemHeap<Collection>> topFive = new MyHeapImpl<>(5, true);
+        MyList<Integer> collIds = ingresos.keys();
+        MyList<IngresoCollection> ingColl = ingresos.values();
 
+        for (int collsInd = 0; collsInd < collIds.size(); collsInd++) {
+            IngresoCollection collIter = ingColl.get(collsInd);
+            addToHeapLong(top, new ItemHeapLong<>(collIter, collIter.getIngreso()), 10);
+        }
 
-                for (int i = 0; i < collection.size(); i++) {
-                    Collection coleccionActual = collection.get(i);
-                    MyLinkedListImpl<Movie> peliculasDeColecc = coleccionActual.getPeliculas();
-                    int sumatoriaGanancias = 0;
-
-                    for (int j = 0; j < peliculasDeColecc.size(); j++) {
-                        Movie peliculaActual = peliculasDeColecc.get(j);
-                        sumatoriaGanancias = sumatoriaGanancias + peliculaActual.getIngresoGenerado();
-
-                    }
-                    addToHeap(topFive, new ItemHeap<>(coleccionActual, sumatoriaGanancias), 5);
-                }
+        while (top.size() > 0) {
+            ItemHeapLong<IngresoCollection> ingresoItem = top.get();
+            IngresoCollection ingrColl = ingresoItem.getItem();
+            Long ingr = ingresoItem.getComparacion();
+            top.delete();
+            System.out.println(ingrColl.getId() + ", ");
+            System.out.println(ingrColl.getTitulo() + ", ");
+            System.out.println(ingrColl.getCantidadPelis() + ", ");
+            for(int p=0; p<ingrColl.getPelisId().size(); p++){
+                System.out.println(ingrColl.getPelisId().get(p) + ", ");
             }
-            private void top10DirecMejorCal () {
-            }
-            private void ActorMasCalificadoMensual () {
-            }
-            private void UsuariosConMasCalificPorGenero () {
-            }
+            System.out.println(ingr);
+        }
+
+    }
+//        MyHeapImpl<ItemHeap<Collection>> topFive = new MyHeapImpl<>(5, true);
+//
+//
+//        for (int i = 0; i < collection.size(); i++) {
+//            Collection coleccionActual = collection.get(i);
+//            MyLinkedListImpl<Movie> peliculasDeColecc = coleccionActual.getPeliculas();
+//            int sumatoriaGanancias = 0;
+//
+//            for (int j = 0; j < peliculasDeColecc.size(); j++) {
+//                Movie peliculaActual = peliculasDeColecc.get(j);
+//                sumatoriaGanancias = sumatoriaGanancias + peliculaActual.getIngresoGenerado();
+//
+//            }
+//            addToHeap(topFive, new ItemHeap<>(coleccionActual, sumatoriaGanancias), 5);
+//        }
+//    }
+
+    private void top10DirecMejorCal() {
+    }
+
+    private void ActorMasCalificadoMensual() {
+    }
+
+    private void UsuariosConMasCalificPorGenero() {
+    }
 }

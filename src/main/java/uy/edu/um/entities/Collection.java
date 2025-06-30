@@ -1,5 +1,10 @@
 package uy.edu.um.entities;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Collection {
     private int id;
     private String name;

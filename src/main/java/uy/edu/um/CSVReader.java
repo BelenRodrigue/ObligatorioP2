@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class CSVReader {
     private MyHashImpl<Integer, Credits> credits = new MyHashImpl<>();
     private MyHashImpl<Integer, Movie> movies = new MyHashImpl<>();
-    private MyHashImpl<Integer, Rating> ratings = new MyHashImpl<>();
+    private MyLinkedListImpl<Rating> ratings = new MyLinkedListImpl<>();
 
     public ResultadoReader readFiles() {
         try {
@@ -48,7 +48,7 @@ public class CSVReader {
             double rating = Double.parseDouble(result[2]);
             long timestamp = Long.parseLong(result[3]);
 
-            ratings.put(userId, new Rating(userId, movieId, rating, timestamp));
+            ratings.add(new Rating(userId, movieId, rating, timestamp));
         }
     }
 
